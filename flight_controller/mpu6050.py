@@ -2,7 +2,11 @@ import smbus
 
 
 class MPU6050:
-    """Module containing an accelerometer and a gyroscope."""
+    """Module containing an accelerometer and a gyroscope.
+
+    The specs of the module can be found at
+    https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf
+    """
 
     # The i2c address of the MPU6050 module.
     i2c_address = 0x68
