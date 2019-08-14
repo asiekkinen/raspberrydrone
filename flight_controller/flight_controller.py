@@ -92,6 +92,8 @@ class FlightController:
                 self.commands[key] = -30 + (value - 1000) * 60 / 1000
             elif key == "pitch":
                 self.commands[key] = -30 + (value - 1000) * 60 / 1000
+            elif key == "throttle":
+                self.commands[key] = value
         if self.commands["throttle"] > self.flying_threshold:
             self.flying = True
         else:
