@@ -1,3 +1,5 @@
+import subprocess
+
 from drone.flight_controller.imu import IMU
 from drone.flight_controller.pid import PID
 from drone.flight_controller.esc import ESC
@@ -51,6 +53,15 @@ class FlightController:
             self._calculate_pulses()
             self._send_pulses()
 
+    def terminate(self):
+        """Terminate the flight controller.
+
+        Kills the pigpiod daemon and this in turn cuts the power to the escs.
+        """
+        output = str(subprocess.Popen("ps ax | grep pigpiod", shell=True, stdout=subprocess.PIPE).stdout.read())
+        pid = re.search(r"(?<= )[0-9]+", output).group(0)
+        subprocess.Popen("sudo kill {}".format(pid), shell=True)
+
     def _parse_commands(self, commands):
         """Handle inputted commands.
 
@@ -98,6 +109,8 @@ class FlightController:
         Sets the pulsewidths to 1000 which initializes the escs. Assuming that
         the escs have went through the first time initialization.
 
+        Starts the pigpiod daemon.
+
         Parameters
         ----------
         front_left_pin : int
@@ -109,6 +122,7 @@ class FlightController:
         back_left_pin : int
             The back left motor's gpio pin in the raspberry pi
         """
+        subprocess.Popen("sudo pigpiod", shell=True)
         self.escs = [ESC(front_left_pin), ESC(front_right_pin),
                      ESC(back_right_pin), ESC(back_left_pin)]
         for esc in self.escs:
