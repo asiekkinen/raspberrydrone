@@ -9,6 +9,7 @@ class FlightController:
     def __init__(self):
         """Initialize variables."""
         self.imu = None
+        self.errors = {"yaw": None, "pitch": None, "roll": None}
         self.pids = {"yaw": PID(0, 0, 0), "pitch": PID(0, 0, 0), "roll": PID(0, 0, 0)}
         self.pulses = [1000, 1000, 1000, 1000]
         self.commands = {"throttle": 100, "yaw": 0, "pitch": 0, "roll": 0}
@@ -43,8 +44,10 @@ class FlightController:
                 if "command" in data:
                     self._parse_commands(data["command"])
             if self.flying:
-                self._calculate_errors()
                 self._calculate_pids()
+            else:
+                for pid in self.pids:
+                    self.pids[pid].pid = 0
             self._calculate_pulses()
             self._send_pulses()
 
@@ -111,12 +114,6 @@ class FlightController:
         for esc in self.escs:
             esc.set_pulsewidth(1000)
 
-    def _calculate_errors(self):
-        """Calculate the errors based on commands and IMU."""
-        self.errors["yaw"] = self.commands["yaw"] - self.imu.yaw
-        self.errors["pitch"] = self.commands["pitch"] - self.imu.pitch
-        self.errors["roll"] = self.commands["roll"] - self.imu.roll
-
     def _calculate_pids(self):
         """Calculate the PID values.
 
@@ -126,21 +123,21 @@ class FlightController:
         self.errors["pitch"] = self.commands["pitch"] - self.imu.pitch
         self.errors["roll"] = self.commands["roll"] - self.imu.roll
         for pid in self.pids:
-            pids[pid].calculate()
+            self.pids[pid].calculate(self.errors[pid])
 
     def _calculate_pulses(self):
         """Calculate the pulses to be send to the escs.
         
         Uses the PID to calculate the pulsewidths.
         """
-        self.pulses[0] = (self.commands["throttle"] + self.pids["roll"]
-                          + self.pids["pitch"] - self.pids["yaw"])
-        self.pulses[1] = (self.commands["throttle"] - self.pids["roll"] 
-                          + self.pids["pitch"] + self.pids["yaw"])
-        self.pulses[2] = (self.commands["throttle"] - self.pids["roll"] 
-                          - self.pids["pitch"] - self.pids["yaw"])
-        self.pulses[3] = (self.commands["throttle"] + self.pids["roll"] 
-                          - self.pids["pitch"] + self.pids["yaw"])
+        self.pulses[0] = (self.commands["throttle"] + self.pids["roll"].pid
+                          + self.pids["pitch"].pid - self.pids["yaw"].pid)
+        self.pulses[1] = (self.commands["throttle"] - self.pids["roll"].pid
+                          + self.pids["pitch"].pid + self.pids["yaw"].pid)
+        self.pulses[2] = (self.commands["throttle"] - self.pids["roll"].pid
+                          - self.pids["pitch"].pid - self.pids["yaw"].pid)
+        self.pulses[3] = (self.commands["throttle"] + self.pids["roll"].pid
+                          - self.pids["pitch"].pid + self.pids["yaw"].pid)
 
     def _send_pulses(self):
         """Change pulsewidths for the escs."""

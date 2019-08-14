@@ -12,6 +12,7 @@ class PID:
         i : float
         d : float
         """
+        self.pid = 0
         self.p = p
         self.i = i
         self.d = d
@@ -39,4 +40,4 @@ class PID:
         self._previous_error = error
         
         # PID
-        return (error * self.p) + (self._error_sum * self.i) + (delta_error * self.d)
+        self.pid = (error * self.p) + (self._error_sum * self.i) + (delta_error * self.d)
