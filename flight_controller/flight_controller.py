@@ -36,16 +36,17 @@ class FlightController:
         ----------
         queue : multiprocessing.Queue
         """
-        self.imu.update_orientation()
-        if not queue.empty():
-            data = queue.get()
-            if "command" in data:
-                self._parse_commands(data["command"])
-        if self.flying:
-            self._calculate_errors()
-            self._calculate_pids()
+        while True:
+            self.imu.update_orientation()
+            if not queue.empty():
+                data = queue.get()
+                if "command" in data:
+                    self._parse_commands(data["command"])
+            if self.flying:
+                self._calculate_errors()
+                self._calculate_pids()
             self._calculate_pulses()
-        self._send_pulses()
+            self._send_pulses()
 
     def _parse_commands(self, commands):
         """Handle inputted commands.
