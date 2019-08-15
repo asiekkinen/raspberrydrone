@@ -7,8 +7,10 @@ import multiprocessing as mp
 from drone.flight_controller.flight_controller import FlightController
 
 
+dirpath = os.path.dirname(os.path.abspath(__file__))
+
 # Flask related.
-app = Flask("__main__", template_folder="static")
+app = Flask("__main__", template_folder=os.path.join(dirpath, "static"))
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 # Flight controller related.
@@ -24,7 +26,7 @@ def index():
 
 @app.route("/static/<string:filename>")
 def static_file(filename):
-    filepath = os.path.join("static", filename)
+    filepath = os.path.join(dirpath, "static", filename)
     if os.path.exists(filepath):
         return send_file(filepath)
 
