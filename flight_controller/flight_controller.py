@@ -146,14 +146,14 @@ class FlightController:
         
         Uses the PID to calculate the pulsewidths.
         """
-        self.pulses[0] = (self.commands["throttle"] + self.pids["roll"].pid
-                          + self.pids["pitch"].pid - self.pids["yaw"].pid)
-        self.pulses[1] = (self.commands["throttle"] - self.pids["roll"].pid
-                          + self.pids["pitch"].pid + self.pids["yaw"].pid)
-        self.pulses[2] = (self.commands["throttle"] - self.pids["roll"].pid
-                          - self.pids["pitch"].pid - self.pids["yaw"].pid)
-        self.pulses[3] = (self.commands["throttle"] + self.pids["roll"].pid
-                          - self.pids["pitch"].pid + self.pids["yaw"].pid)
+        self.pulses[0] = int(self.commands["throttle"] + self.pids["roll"].pid
+                             + self.pids["pitch"].pid - self.pids["yaw"].pid)
+        self.pulses[1] = int(self.commands["throttle"] - self.pids["roll"].pid
+                             + self.pids["pitch"].pid + self.pids["yaw"].pid)
+        self.pulses[2] = int(self.commands["throttle"] - self.pids["roll"].pid
+                             - self.pids["pitch"].pid - self.pids["yaw"].pid)
+        self.pulses[3] = int(self.commands["throttle"] + self.pids["roll"].pid
+                             - self.pids["pitch"].pid + self.pids["yaw"].pid)
 
     def _send_pulses(self):
         """Change pulsewidths for the escs."""
