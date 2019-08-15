@@ -1,4 +1,5 @@
 import subprocess
+from time import sleep
 
 from drone.flight_controller.imu import IMU
 from drone.flight_controller.pid import PID
@@ -116,6 +117,7 @@ class FlightController:
             The back left motor's gpio pin in the raspberry pi
         """
         subprocess.Popen("sudo pigpiod", shell=True)
+        sleep(2)
         self.escs = [ESC(front_left_pin), ESC(front_right_pin),
                      ESC(back_right_pin), ESC(back_left_pin)]
         for esc in self.escs:
