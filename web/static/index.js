@@ -9,22 +9,20 @@ var rightX = null;
 var rightY = null;
 
 
-var setupFlightController = function(){
-    fetch(
-        '/config',
-        {
-            method: 'POST',
-            body: JSON.stringify({
-                "flightController": {
-                    "start": true
-                }
-            }),
-            cache: 'no-cache',
-            headers: new Headers({
-                'content-type': 'application/json'
-            })
-        }
-    );
+var connect = function(e){
+    setInterval(function(){
+        fetch(
+            '/api',
+            {
+                method: 'POST',
+                body: JSON.stringify({"alive": true}),
+                cache: 'no-cache',
+                headers: new Headers({
+                    'content-type': 'application/json'
+                })
+            }
+        );
+    }, 1000);
 }
 
 
@@ -58,16 +56,17 @@ lc.addEventListener("touchend", e => {
     throttle = throttle < 1500 ? throttle : 1500;
     yaw = 1500;
     fetch(
-        '/command',
-        {method: 'POST',
-         body: JSON.stringify({
-             'throttle': throttle,
-             'yaw': yaw
-         }),
-         cache: 'no-cache',
-         headers: new Headers({
-             'content-type': 'application/json'
-         })
+        '/api',
+        {
+            method: 'POST',
+            body: JSON.stringify({
+                'throttle': throttle,
+                'yaw': yaw
+            }),
+            cache: 'no-cache',
+            headers: new Headers({
+                'content-type': 'application/json'
+            })
         }
     );
 });
@@ -84,16 +83,17 @@ lc.addEventListener("touchmove", e => {
         throttle = Math.round(2000 - leftY * 1000 / coords.height);
         yaw = Math.round(1000 + leftX * 2000 / coords.width);
         fetch(
-            '/command',
-            {method: 'POST',
-             body: JSON.stringify({
-                 'throttle': throttle,
-                 'yaw': yaw
-             }),
-             cache: 'no-cache',
-             headers: new Headers({
-                 'content-type': 'application/json'
-             })
+            '/api',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    'throttle': throttle,
+                    'yaw': yaw
+                }),
+                cache: 'no-cache',
+                headers: new Headers({
+                    'content-type': 'application/json'
+                })
             }
         );
     }
@@ -114,16 +114,17 @@ rc.addEventListener("touchend", e => {
     pitch = 1500;
     roll = 1500;
     fetch(
-        '/command',
-        {method: 'POST',
-         body: JSON.stringify({
-             'pitch': pitch,
-             'roll': roll
-         }),
-         cache: 'no-cache',
-         headers: new Headers({
-             'content-type': 'application/json'
-         })
+        '/api',
+        {
+            method: 'POST',
+            body: JSON.stringify({
+                'pitch': pitch,
+                'roll': roll
+            }),
+            cache: 'no-cache',
+            headers: new Headers({
+                'content-type': 'application/json'
+            })
         }
     );
 });
@@ -140,16 +141,17 @@ rc.addEventListener("touchmove", e => {
         pitch = Math.round(1000 + rightY * 2000 / coords.height);
         roll = Math.round(1000 + rightX * 2000 / coords.width);
         fetch(
-            '/command',
-            {method: 'POST',
-             body: JSON.stringify({
-                 'pitch': pitch,
-                 'roll': roll
-             }),
-             cache: 'no-cache',
-             headers: new Headers({
-                 'content-type': 'application/json'
-             })
+            '/api',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    'pitch': pitch,
+                    'roll': roll
+                }),
+                cache: 'no-cache',
+                headers: new Headers({
+                    'content-type': 'application/json'
+                })
             }
         );
     }

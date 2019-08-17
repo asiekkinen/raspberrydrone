@@ -40,12 +40,18 @@ class FlightController:
         ----------
         queue : multiprocessing.Queue
         """
+        no_message_counter = 0
         while True:
             self.imu.update_orientation()
             if not queue.empty():
+                no_message_counter = 0
                 data = queue.get()
                 if "command" in data:
                     self._parse_commands(data["command"])
+            else:
+                no_message_counter += 1
+                if no_message_counter > 1000:
+                    raise AssertionError("No message recieved in 1000 epochs")
             if self.flying:
                 self._calculate_pids()
             else:

@@ -31,26 +31,11 @@ def static_file(filename):
         return send_file(filepath)
 
 
-@app.route("/command", methods=["POST"])
-def command():
-    body = request.get_json()
-    QUEUE.put({"command": body})
-    return make_response()
-
-
-@app.route("/config", methods=["GET", "POST"])
-def config():
+@app.route("/api", methods=["POST"])
+def alive():
     body = request.get_json()
     print(body)
-    if request.method == "POST":
-        if "flightController" in body:
-            if "start" in body["flightController"]:
-                if body["flightController"]["start"] == True:
-                    FLIGHT_CONTROLLER = FlightController()
-                    FLIGHT_CONTROLLER.setup()
-                    FLIGHT_PROCESS = mp.Process(target=FLIGHT_CONTROLLER.loop,
-                                                args=(QUEUE, ))
-                    FLIGHT_PROCESS.start()
+    QUEUE.put(body)
     return make_response()
 
 

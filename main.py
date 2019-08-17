@@ -1,6 +1,7 @@
 import subprocess
 import re
 import multiprocessing as mp
+from time import sleep
 from drone.flight_controller.flight_controller import FlightController
 import drone.wifi_access_point as wifiap
 import drone.web.server as server
@@ -8,28 +9,58 @@ import drone.web.server as server
 
 class Drone:
     def __init__(self):
-        self.controller = server.app
+        self.message_queue = mp.Queue()
         self.flight_controller = FlightController()
-        
-    def setup(self):
-        wifiap.start_access_point()
+        self.server_process = None
+        self.flight_controller_process = None
 
-    def run(self):
-        self.controller.run("0.0.0.0", 5000)
+    def setup(self):
+        server.QUEUE = self.message_queue
+        self.server_process = mp.Process(target=server.app.run,
+                                         args=("0.0.0.0", 8080))
+        self.server_process.start()
+        while True:
+            if not self.message_queue.empty():
+                message = self.message_queue.get()
+                if message["alive"] == True:
+                    fc = FlightController()
+                    fc.setup()
+                    self.flight_controller_process = mp.Process(
+                        target=fc.loop, args=(self.message_queue, ))
+                    self.flight_controller_process.start()
+                    return
+                else:
+                    print(message)
+                    raise AssertionError("Got incorrect start message.")
+            sleep(1)
+
+    def loop(self):
+        while True:
+            if not self.flight_controller_process.is_alive():
+                raise AssertionError("Flight controller stopped")
+            elif not self.server_process.is_alive():
+                raise AssertionError("Web server stopped")
+            sleep(1)
 
     def teardown(self):
-        """Kills the pigpiod daemon and this in turn cuts the power to the escs."""
         output = str(subprocess.Popen("ps ax | grep pigpiod", shell=True, stdout=subprocess.PIPE).stdout.read())
         pid = re.search(r"[0-9]+", output).group(0)
         subprocess.Popen("sudo kill {}".format(pid), shell=True)
-        wifiap.stop_access_point()
+        try:
+            self.flight_controller_process.terminate()
+        except Exception as e:
+            print(e)
+        try:
+            self.server_process.terminate()
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":
     drone = Drone()
     try:
         drone.setup()
-        drone.run()
+        drone.loop()
     except Exception as e:
         print(e)
     finally:
