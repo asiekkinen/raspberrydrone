@@ -82,8 +82,10 @@ lc.addEventListener("touchend", e => {
         {
             method: 'POST',
             body: JSON.stringify({
-                'throttle': throttle,
-                'yaw': yaw
+                'command' : {
+                    'throttle': throttle,
+                    'yaw': yaw
+                }
             }),
             cache: 'no-cache',
             headers: new Headers({
@@ -109,8 +111,10 @@ lc.addEventListener("touchmove", e => {
             {
                 method: 'POST',
                 body: JSON.stringify({
-                    'throttle': throttle,
-                    'yaw': yaw
+                    'command' : {
+                        'throttle': throttle,
+                        'yaw': yaw
+                    }
                 }),
                 cache: 'no-cache',
                 headers: new Headers({
@@ -140,8 +144,10 @@ rc.addEventListener("touchend", e => {
         {
             method: 'POST',
             body: JSON.stringify({
-                'pitch': pitch,
-                'roll': roll
+                'command': {
+                    'pitch': pitch,
+                    'roll': roll
+                }
             }),
             cache: 'no-cache',
             headers: new Headers({
@@ -167,8 +173,10 @@ rc.addEventListener("touchmove", e => {
             {
                 method: 'POST',
                 body: JSON.stringify({
-                    'pitch': pitch,
-                    'roll': roll
+                    'command': {
+                        'pitch': pitch,
+                        'roll': roll
+                    }
                 }),
                 cache: 'no-cache',
                 headers: new Headers({
