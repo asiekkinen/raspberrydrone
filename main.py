@@ -14,6 +14,11 @@ class Drone:
         self.flight_controller_process = None
 
     def setup(self):
+        """Drone setup
+
+        Starts the web server and waits for the alive message from the client.
+        When client sends the alive message, the flight controller is started.
+        """
         server.QUEUE = self.message_queue
         self.server_process = mp.Process(target=server.APP.run,
                                          args=("0.0.0.0", 8080))
@@ -33,7 +38,11 @@ class Drone:
                     raise AssertionError("Got incorrect start message.")
             sleep(1)
 
-    def loop(self):
+    def monitor(self):
+        """Monitor the server and flight controller processes.
+
+        Raises error if any of the processes is stopped.
+        """
         while True:
             if not self.flight_controller_process.is_alive():
                 raise AssertionError("Flight controller stopped")
@@ -42,6 +51,11 @@ class Drone:
             sleep(1)
 
     def teardown(self):
+        """Drone teardown
+
+        Kills the power to the ESCs and terminates the web server and flight
+        controller processes.
+        """
         output = str(subprocess.Popen("ps ax | grep pigpiod", shell=True, stdout=subprocess.PIPE).stdout.read())
         pid = re.search(r"[0-9]+", output).group(0)
         subprocess.Popen("sudo kill {}".format(pid), shell=True)
