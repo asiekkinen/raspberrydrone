@@ -9,14 +9,12 @@ from drone.flight_controller.flight_controller import FlightController
 
 dirpath = os.path.dirname(os.path.abspath(__file__))
 
-# Flask related.
+
 app = Flask("__main__", template_folder=os.path.join(dirpath, "static"))
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-# Flight controller related.
+
 QUEUE = mp.Queue()
-FLIGHT_CONTROLLER = None
-FLIGHT_PROCESS = None
 
 
 @app.route("/")
