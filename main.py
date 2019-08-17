@@ -3,7 +3,6 @@ import re
 import multiprocessing as mp
 from time import sleep
 from drone.flight_controller.flight_controller import FlightController
-import drone.wifi_access_point as wifiap
 import drone.web.server as server
 
 
