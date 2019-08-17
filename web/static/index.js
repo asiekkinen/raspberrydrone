@@ -9,19 +9,41 @@ var rightX = null;
 var rightY = null;
 
 
+var connectionIntervalId = null;
+
+
+var disconnect = function(e){
+    clearInterval(connectionIntervalId);
+    fetch(
+        '/api',
+        {
+            method: 'POST',
+            body: JSON.stringify({"alive": false}),
+            cache: 'no-cache',
+            headers: new Headers({
+                'content-type': 'application/json'
+            })
+        }
+    );
+    e.innerText = "Disconnected";
+}
+
+
 var connect = function(e){
-    setInterval(function(){
+    e.innerText = "Disconnect";
+    e.onclick = disconnect;
+    connectionIntervalId = setInterval(function(){
         fetch(
-            '/api',
-            {
-                method: 'POST',
-                body: JSON.stringify({"alive": true}),
-                cache: 'no-cache',
-                headers: new Headers({
-                    'content-type': 'application/json'
-                })
-            }
-        );
+                '/api',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({"alive": true}),
+                    cache: 'no-cache',
+                    headers: new Headers({
+                        'content-type': 'application/json'
+                    })
+                }
+            );
     }, 1000);
 }
 

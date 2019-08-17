@@ -46,6 +46,10 @@ class FlightController:
             if not queue.empty():
                 no_message_counter = 0
                 data = queue.get()
+                if "alive" in data:
+                    if data["alive"] == False:
+                        print("Shutting down")
+                        return
                 if "command" in data:
                     self._parse_commands(data["command"])
             else:
