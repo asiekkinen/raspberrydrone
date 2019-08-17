@@ -1,35 +1,31 @@
-from flask import Flask, Response, render_template, send_file, request, make_response
+from flask import Flask, render_template, send_file, request, make_response
 import os
-import io
-import time
-from threading import Condition
 import multiprocessing as mp
-from drone.flight_controller.flight_controller import FlightController
 
 
-dirpath = os.path.dirname(os.path.abspath(__file__))
+_DIRPATH = os.path.dirname(os.path.abspath(__file__))
 
 
-app = Flask("__main__", template_folder=os.path.join(dirpath, "static"))
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+APP = Flask("__main__", template_folder=os.path.join(_DIRPATH, "static"))
+APP.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 QUEUE = mp.Queue()
 
 
-@app.route("/")
+@APP.route("/")
 def index():
     return render_template("index.html")
 
 
-@app.route("/static/<string:filename>")
+@APP.route("/static/<string:filename>")
 def static_file(filename):
-    filepath = os.path.join(dirpath, "static", filename)
+    filepath = os.path.join(_DIRPATH, "static", filename)
     if os.path.exists(filepath):
         return send_file(filepath)
 
 
-@app.route("/api", methods=["POST"])
+@APP.route("/api", methods=["POST"])
 def alive():
     body = request.get_json()
     print(body)
@@ -38,4 +34,4 @@ def alive():
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", 5000)
+    APP.run("0.0.0.0", 5000)

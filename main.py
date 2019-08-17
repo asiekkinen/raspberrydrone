@@ -15,7 +15,7 @@ class Drone:
 
     def setup(self):
         server.QUEUE = self.message_queue
-        self.server_process = mp.Process(target=server.app.run,
+        self.server_process = mp.Process(target=server.APP.run,
                                          args=("0.0.0.0", 8080))
         self.server_process.start()
         while True:
