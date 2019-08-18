@@ -100,12 +100,26 @@ lc.addEventListener("touchmove", e => {
         var coords = lc.getBoundingClientRect();
         leftX = e.touches[0].clientX - coords.left;
         leftY = e.touches[0].clientY - coords.top;
+        if (leftX < 0){
+            leftX = 0;
+        }
+        if (leftX > lc.height) {
+            leftX = lc.height;
+        }
+
+        if (leftY < 0){
+            leftY = 0;
+        }
+        if (leftY > lc.width) {
+            leftY = lc.width;
+        }
         lctx.clearRect(0, 0, lc.width, lc.height);
         lctx.beginPath();
         lctx.arc(leftX, leftY, 50, 0, 2 * Math.PI);
         lctx.stroke();
+        console.log(leftX);
         throttle = Math.round(2000 - leftY * 1000 / coords.height);
-        yaw = Math.round(1000 + leftX * 2000 / coords.width);
+        yaw = Math.round(1000 + leftX * 1000 / coords.width);
         fetch(
             '/api',
             {
@@ -162,12 +176,25 @@ rc.addEventListener("touchmove", e => {
         var coords = rc.getBoundingClientRect();
         rightX = e.touches[0].clientX - coords.left;
         rightY = e.touches[0].clientY - coords.top;
+        if (rightX < 0){
+            rightX = 0;
+        }
+        if (rightX > rc.height) {
+            rightX = rc.height;
+        }
+
+        if (rightY < 0){
+            rightY = 0;
+        }
+        if (rightY > rc.width) {
+            rightY = rc.width;
+        }
         rctx.clearRect(0, 0, rc.width, rc.height);
         rctx.beginPath();
         rctx.arc(rightX, rightY, 50, 0, 2 * Math.PI);
         rctx.stroke();
-        pitch = Math.round(1000 + rightY * 2000 / coords.height);
-        roll = Math.round(1000 + rightX * 2000 / coords.width);
+        pitch = Math.round(2000 - rightY * 1000 / coords.height);
+        roll = Math.round(1000 + rightX * 1000 / coords.width);
         fetch(
             '/api',
             {
